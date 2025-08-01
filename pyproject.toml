@@ -1,0 +1,162 @@
+[project]
+name = "soy-cli"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "jpm2617", email = "josepedro.moreno@outlook.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "databricks-connect==13.3.*",
+    "pydantic>=2.11.7",
+    "pydantic-settings>=2.10.1",
+    "pyspark==3.4.1",
+    "rich>=14.0.0",
+    "ruff>=0.12.3",
+    "structlog>=25.4.0",
+]
+
+[project.scripts]
+soy-cli = "soy_cli:main"
+test-databricks-connect = "soy_cli.databricks.session:start_spark_session"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+  "mypy>=1.17.0",
+  "pytest==8.1.1",
+  "pytest-asyncio==0.23.7",
+  "pytest-cov==5.0.0",
+  "pytest-html==4.1.1",
+  "pytest-metadata==3.1.1",
+]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.mypy]
+check_untyped_defs = true
+disable_error_code = [
+  "import-untyped",
+]
+disallow_any_unimported = false
+disallow_untyped_defs = true
+files = ["soy_cli"]
+junit_xml = "artifacts/mypy.xml"
+no_implicit_optional = true
+plugins = [
+  "pydantic.mypy",
+]
+show_column_numbers = true
+show_error_codes = true
+show_error_context = true
+warn_return_any = false
+warn_unreachable = false
+warn_unused_ignores = true
+
+[tool.ruff]
+fix = true
+indent-width = 4
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+ignore = [
+  "TRY002", # Create your own exceptions
+  "TRY003", # Avoid specifying long messages outside the exception class
+  "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+  "E501", # LineTooLong
+  "E731", # DoNotAssignLambda
+  "S104", # Possible binding to all interfaces (HOST = 0.0.0.0)
+  "D100", # Missing docstring in public module
+  "D101", # Missing docstring in public class
+  "D104", # Missing docstring in public package
+  "D107", # Missing docstring in __init__
+  "D203", # 1 blank line required before class docstring
+  "D213", # Multi-line docstring summary should start at the second line
+]
+select = [
+  "YTT", # flake8-2020
+  "S", # flake8-bandit
+  "B", # flake8-bugbear
+  "A", # flake8-builtins
+  "C4", # flake8-comprehensions
+  "T10", # flake8-debugger
+  "SIM", # flake8-simplify
+  "I", # isort
+  "C90", # mccabe
+  "E", # pycodestyle
+  "W", # pycodestyle
+  "F", # pyflakes
+  "PGH", # pygrep-hooks
+  "UP", # pyupgrade
+  "RUF", # ruff
+  "TRY", # tryceratops
+  "D", # flake8-docstrings
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/*" = ["S101"]
+
+[tool.ruff.format]
+preview = true
+# Like Black, use double quotes for strings.
+quote-style = "double"
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = true
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
+
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+addopts = [
+  "-v",
+  "--exitfirst",
+  "--failed-first",
+  "--strict-config",
+  "--strict-markers",
+  "--junitxml=artifacts/coverage.xml",
+  "--cov=src/soy_cli",
+  "--cov-report=term",
+  "--cov-report=html:artifacts/coverage.html",
+  "--cov-report=xml:artifacts/coverage.xml",
+]
+markers = []
+asyncio_mode="auto"
+testpaths = ["tests"]
+xfail_strict = true
+
+[tool.coverage.run]
+source = ["src/soy_cli"]
+omit = ["*/tests/*", "*/test_*"]
+
+[tool.coverage.report]
+fail_under = 50
+precision = 1
+show_missing = true
+skip_covered = true
+
+[tool.coverage.xml]
+output = "artifacts/coverage.xml"
+
+[tool.coverage.html]
+directory = "artifacts/coverage.html"

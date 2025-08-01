@@ -1,0 +1,16 @@
+name: my-first-transform
+inputs:
+  - name: input_name
+    strategy: spark
+    api: table
+    args:
+      tableName: catalog.schema.input_table_name
+
+outputs:
+  - name: output_name
+    strategy: spark
+    api: saveAsTable
+    args:
+      name: "{{ DATABRICKS_CATALOG }}.{{ DATABRICKS_SCHEMA }}.output_table_name"
+      format: delta
+      mode: overwrite
